@@ -12,8 +12,27 @@ const boardRouter = require("./routes/board");
 const port = process.env.PORT || 3000;
 const app = express();
 
-// 라우팅 없이 바로 호출 가능하도록 static 폴더 설정
+const { engine } = require("express-handlebars");
+
+app.engine(
+  "hbs",
+  engine({
+    extname: ".hbs",
+    defaultLayout: "layout",
+    helpers: {
+      section: function (name, options) {
+        if (!this._sections) this._sections = {};
+        this._sections[name] = options.fn(this);
+        return null;
+      },
+    },
+  })
+);
 app.use(express.static(path.join(__dirname, "static")));
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "hbs");
+
+
 
 app.use(logger("dev"));
 
@@ -28,6 +47,7 @@ app.use((req, res) => {
   res.send("404-페이지가 없음");
 });
 app.use((err, req, res, next) => {
+    console.log(err);
   res.status(500);
   res.send("500-서버 내부 오류발생!");
 });
