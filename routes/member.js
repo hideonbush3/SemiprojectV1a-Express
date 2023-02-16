@@ -3,13 +3,14 @@ const path = require("path");
 const router = express.Router();
 
 router.get("/join", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public", "join.html"));
+  res.render('join', {title: 'join페이지'})
 });
+
 router.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public", "login.html"));
+  res.render('login', {title: 'login페이지'})
 });
 router.get("/myinfo", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public", "myinfo.html"));
+  res.render('myinfo', {title: 'myinfo페이지'})
 });
 
 module.exports = router;
