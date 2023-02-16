@@ -5,22 +5,22 @@ const logger = require('morgan');
 
 // 라우팅 모듈 설정
 const indexRouter = require('./routes/index');
-const userRouter = require('./routes/user');
-const aboutRouter = require('./routes/about');
+const memberRouter = require('./routes/member');
+const boardRouter = require('./routes/board');
 
 // 포트변수 선언 및 express 객체 생성
 const port = process.env.PORT || 3000;
 const app = express();
 
 // 라우팅 없이 바로 호출 가능하도록 static 폴더 설정
-app.user(express.static(path.join(__dirname, 'static')));
+app.use(express.static(path.join(__dirname, 'static')));
 
 app.use(logger('dev'));
 
 // 라우팅 모듈 등록 - 클라이언트 요청 처리 핵심 파트
 app.use('/', indexRouter);
-app.use('/user', userRouter);
-app.use('/about', aboutRouter);
+app.use('/member', memberRouter);
+app.use('/board', boardRouter);
 
 // 404, 500 응답코드 라우팅 처리 정의
 app.use((req, res) => {
