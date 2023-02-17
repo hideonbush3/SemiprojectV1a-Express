@@ -12,5 +12,5 @@ const processJoin = () => {
     }
 };
 
-let joinbtn = document.querySelector('#mbbtn');
+let joinbtn = document.querySelector('#joinbtn');
 joinbtn.addEventListener('click', processJoin);
