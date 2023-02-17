@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const path = require("path");
 
 router.get("/", (req, res) => {
-  res.render('index', {title: 'index페이지'})
+  res.render('index', {title: '홈'})
 });
 
 module.exports = router;
