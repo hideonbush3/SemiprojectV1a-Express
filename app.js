@@ -4,7 +4,7 @@ const path = require("path");
 const logger = require("morgan");
 const { engine } = require("express-handlebars");
 const bodyParser = require("body-parser");
-const session = require("express-session")
+const session = require("express-session");
 const oracledb = require("./models/Oracle");
 
 // 라우팅 모듈 설정
@@ -44,14 +44,16 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
 
 // 세션
+// 지속시간 1000 = 1분
 const maxAge = 1000 * 30;
 const sessionObj = {
-    resave: false, saveUninitialized: false,
-    // secret: process.env.COOKIE_SECRET,
-    secret: 'process.env.COOKIE_SECRET',
-    cookie: { httpOnly: true, secure: false, },
-    name: 'session-cookie',
-    maxAge: maxAge
+  resave: false,
+  saveUninitialized: false,
+  // secret 보안용 암호
+  secret: "process.env.COOKIE_SECRET",
+  cookie: { httpOnly: true, secure: false },
+  name: "session-cookie",
+  maxAge: maxAge,
 };
 app.use(session(sessionObj));
 
@@ -71,9 +73,10 @@ app.use(bodyParser.json());
 oracledb.initConn();
 
 // 생성한 세션을 모든 페이지에서 접근 가능하게 함
-app.use(function(req, res, next){
-    res.locals.session = req.session;
-    next();
+app.use(function (req, res, next) {
+  // req.session 써서 생성한 세션 사용가능
+  res.locals.session = req.session;
+  next();
 });
 
 // 라우팅 모듈 등록 - 클라이언트 요청 처리 핵심 파트
