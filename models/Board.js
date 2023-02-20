@@ -5,8 +5,8 @@ let boardsql = {
     "insert into board (bno, title, userid, contents) values (bno.nextval, :1, :2, :3)",
   select:
     "select bno,title,userid,to_char(regdate, 'YYYY-MM-DD') regdate,views,contents from board order by bno desc",
-  selectOne: "select title, userid, to_char(regdate, 'YYYY-MM-DD') regdate," +
-      " views, contents from board where bno = :1",
+  selectOne:
+    "select board.*, to_char(regdate, 'YYYY-MM-DD hh:MI:ss') regdate2 from board where bno = :1",
   update: "update board set title = :1, contents = :2 where bno = :3;",
   delete: "delete from board where bno = :1;",
 };
@@ -50,12 +50,21 @@ class Board {
     try {
       conn = await oracledb.makeConn();
       let result = await conn.execute(
-          boardsql.select, params, oracledb.options);
+        boardsql.select,
+        params,
+        oracledb.options
+      );
       let rs = result.resultSet;
       let row = null;
       while ((row = await rs.getRow())) {
-        let bd = new Board(row.BNO, row.TITLE, row.USERID, row.REGDATE,
-            null, row.VIEWS);
+        let bd = new Board(
+          row.BNO,
+          row.TITLE,
+          row.USERID,
+          row.REGDATE,
+          null,
+          row.VIEWS
+        );
         bds.push(bd);
       }
     } catch (e) {
@@ -69,17 +78,27 @@ class Board {
   // 게시글 상세조회
   async selectOne(bno) {
     let conn = null;
-    let result = null;
     let bds = [];
+    let params = [bno];
 
     try {
       conn = await oracledb.makeConn();
-      result = await conn.execute(boardsql.selectOne, [bno], oracledb.options)
+      let result = await conn.execute(
+        boardsql.selectOne,
+        params,
+        oracledb.options
+      );
       let rs = result.resultSet;
       let row = null;
       while ((row = await rs.getRow())) {
-        let bd = new Board(null, row.TITLE, row.USERID, row.REGDATE,
-            row.CONTENTS, row.VIEWS);
+        let bd = new Board(
+          row.BNO,
+          row.TITLE,
+          row.USERID,
+          row.REGDATE2,
+          row.CONTENTS,
+          row.VIEWS
+        );
         bds.push(bd);
       }
     } catch (e) {
@@ -94,9 +113,8 @@ class Board {
   // 게시글 수정
   async updete() {
     let conn = null;
-    let params = [this.title, this.userid, this.contents];
+    let params = [this.title, this.contents, this.bno];
     let insertcnt = 0;
-
     try {
       conn = await oracledb.makeConn();
       let result = await conn.execute(boardsql.update, params);
