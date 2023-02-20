@@ -1,10 +1,12 @@
 const oracledb = require("../models/Oracle");
 
 let membersql = {
-  insertsql: "insert into member (mno, userid, passwd, name, email) values (mno.nextval, :1, :2, :3, :4)",
-}
+  insertsql:
+    "insert into member (mno, userid, passwd, name, email) values (mno.nextval, :1, :2, :3, :4)",
+  loginsql:
+    "select count(userid) cnt from member where userid =:1 and passwd =:2",
+};
 class Member {
-
   // 생성자 정의 - 변수 초기화
   constructor(userid, passwd, name, email) {
     this.userid = userid;
@@ -13,7 +15,7 @@ class Member {
     this.email = email;
   }
 
-  // 회원정보 저장
+  // 회원가입
   async insert() {
     let conn = null;
     let params = [this.userid, this.passwd, this.name, this.email];
@@ -31,5 +33,32 @@ class Member {
       await oracledb.closeConn(conn);
     }
   }
+
+  // 로그인 처리
+  async Login(uid, pwd) {
+    let conn = null;
+    let params = [uid, pwd];
+    let isLogin = 0;
+
+    try {
+      conn = await oracledb.makeConn();
+      let result = await conn.execute(
+        membersql.loginsql,
+        params,
+        oracledb.options
+      );
+      let rs = result.resultSet;
+      let row = null;
+      while ((row = await rs.getRow())) {
+        isLogin = row.CNT;
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      await oracledb.closeConn(conn);
+    }
+    return isLogin;
+  }
 }
+
 module.exports = Member;
