@@ -10,7 +10,7 @@ router.post("/join", (req, res, next) => {
   let { userid, passwd, name, email } = req.body;
   console.log(userid, passwd, name, email);
 
-  // 데이터베이스 처리  - sungjuk 테이블에 insert - 모델
+  // 데이터베이스 처리  - member 테이블에 insert
   new Member(userid, passwd, name, email).insert();
 
   res.redirect(302, "/member/login");

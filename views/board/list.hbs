@@ -95,6 +95,23 @@
     <tr><td>20</td><td>시간은 금이라구, 친구!, 진짜라구, 친구, 정말이라구, 친구,
         사실이라구, 친구!</td>
       <td>zzyzzy</td><td>2022-12-10</td><td>123</td></tr>
+      <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>날짜</th>
+          <th>조회수</th>
+      </tr>
+      <!-- 리스트행 시작 -->
+      {{#bds}}
+          <tr>
+              <td>{{bno}}</td>
+              <td><a href="/view?bno={{bno}}">{{title}}</a></td>
+              <td>{{name}}</td>
+              <td>{{regdate}}</td>
+              <td>{{views}}</td>
+          </tr>
+      {{/bds}}
   </table>
 
   <ul class="pagenation"><li class="prev">이전</li>
