@@ -7,6 +7,7 @@ let boardsql = {
     "select bno,title,userid,to_char(regdate, 'YYYY-MM-DD') regdate,views,contents from board order by bno desc",
   selectOne:
     "select board.*, to_char(regdate, 'YYYY-MM-DD hh:MI:ss') regdate2 from board where bno = :1",
+  viewOne: "update board set views = views + 1 where bno = :1",
   update: "update board set title = :1, contents = :2 where bno = :3;",
   delete: "delete from board where bno = :1;",
 };
@@ -82,6 +83,7 @@ class Board {
     let params = [bno];
 
     try {
+      // 본문글 상세보기
       conn = await oracledb.makeConn();
       let result = await conn.execute(
         boardsql.selectOne,
@@ -100,6 +102,10 @@ class Board {
           row.VIEWS
         );
         bds.push(bd);
+
+        // 조회수 증가
+        await conn.execute(boardsql.viewOne, params);
+        await conn.commit();
       }
     } catch (e) {
       console.log(e);
