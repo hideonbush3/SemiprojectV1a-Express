@@ -1,10 +1,10 @@
 // express 모듈과 기타 미들웨어 모듈 사용 선언
-const express = require('express');
-const path = require('path');
-const logger = require('morgan');
-const { engine } = require('express-handlebars');
-const bodyParser = require('body-parser');
-const oracledb = require('./models/Oracle');
+const express = require("express");
+const path = require("path");
+const logger = require("morgan");
+const { engine } = require("express-handlebars");
+const bodyParser = require("body-parser");
+const oracledb = require("./models/Oracle");
 
 // 라우팅 모듈 설정
 const indexRouter = require("./routes/index");
@@ -13,20 +13,25 @@ const boardRouter = require("./routes/board");
 
 // express 객체 생성 및 포트 변수 선언
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
-// 뷰 엔진 등록
-// 첫번째 인자는 뷰 엔진의 이름
-// 두번째 인자는 handlebars를 구성하는 옵션을 포함하는 함수
-app.engine('hbs', engine({
-    extname: '.hbs', defaultLayout: 'layout',
+// 템플릿 엔진 등록
+// 첫번째 인자는 템플릿 엔진의 이름
+// 두번째 인자는 handlebars 구성하는 옵션을 포함하는 함수
+app.engine(
+  "hbs",
+  engine({
+    extname: ".hbs",
+    defaultLayout: "layout",
     helpers: {
-        section: function(name, options) {
-            if(!this._sections) this._sections = {}
-            this._sections[name] = options.fn(this)
-            return null
-        }, },
-}));
+      section: function (name, options) {
+        if (!this._sections) this._sections = {};
+        this._sections[name] = options.fn(this);
+        return null;
+      },
+    },
+  })
+);
 
 // 렌더링할 view 파일들의 위치로 'views' 폴더를 지정
 app.set("views", path.join(__dirname, "views"));
@@ -49,7 +54,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // app.use(bodyParser.text()) // enctype이 text/plain 일때 필요 (비추)
 
-// 오라클 instant client 초기화
+// 서버가 시작될때 한번만 오라클 instant client 초기화
 oracledb.initConn();
 
 // 라우팅 모듈 등록 - 클라이언트 요청 처리 핵심 파트
