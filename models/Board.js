@@ -8,8 +8,8 @@ let boardsql = {
   selectOne:
     "select board.*, to_char(regdate, 'YYYY-MM-DD hh:MI:ss') regdate2 from board where bno = :1",
   viewOne: "update board set views = views + 1 where bno = :1",
-  update: "update board set title = :1, contents = :2 where bno = :3;",
-  delete: "delete from board where bno = :1;",
+  update: "update board set title = :1, contents = :2 where bno = :3",
+  delete: "delete from board where bno = :1",
 };
 
 class Board {
@@ -135,22 +135,22 @@ class Board {
   }
 
   // 게시글 삭제
-  async delete() {
+  async delete(bno) {
     let conn = null;
-    let params = [this.title, this.userid, this.contents];
-    let insertcnt = 0;
+    let params = [bno];
+    let deletecnt = 0;
 
     try {
       conn = await oracledb.makeConn();
       let result = await conn.execute(boardsql.delete, params);
       await conn.commit();
-      console.log(result);
+      if (result.rowsAffected > 0) deletecnt = result.rowsAffected;
     } catch (e) {
       console.log(e);
     } finally {
       await oracledb.closeConn(conn);
     }
-    return insertcnt;
+    return deletecnt;
   }
 }
 

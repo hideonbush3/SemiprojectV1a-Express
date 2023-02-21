@@ -9,10 +9,9 @@ router.get("/list", async (req, res) => {
 });
 
 router.get("/write", (req, res) => {
-  if (!req.session.userid){
-    res.redirect(303, '/member/login');
-  }else
-  res.render("board/write", { title: "글쓰기" });
+  if (!req.session.userid) {
+    res.redirect(303, "/member/login");
+  } else res.render("board/write", { title: "글쓰기" });
 });
 router.post("/write", async (req, res) => {
   let viewName = "/board/failWrite";
@@ -40,10 +39,17 @@ router.get("/view", async (req, res) => {
   // 상세내용을 이용해서 board/view 뷰 템플릿을 렌더링해서 클라이언트에 응답
   res.render("board/view", { title: "게시글 상세내용", bds: await bds });
 });
-// router.get("/update", async (req, res) => {
-//   let bds = new Board().select().then((bds) => bds);
-//   // console.log(await bds)
-//   res.render("board/list", { title: "게시판", bds: await bds }); // 템플릿 페이지에서 {{#bds}} 라고 쓰면됨
-// });
+
+// 게시글 삭제
+router.get("/delete", async (req, res) => {
+  let { bno, uid } = req.query;
+  let suid = req.session.userid;
+
+  // 글 작성자 id와 삭제하는자의 id가 일치하는 경우
+  if (suid && uid && suid == uid) {
+    new Board().delete(bno).then((cnt) => cnt);
+  }
+  res.redirect(303, "/board/list");
+});
 
 module.exports = router;
