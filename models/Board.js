@@ -7,6 +7,7 @@ let boardsql = {
     "select bno,title,userid,to_char(regdate, 'YYYY-MM-DD') regdate,views,contents from board order by bno desc",
   selectOne:
     "select board.*, to_char(regdate, 'YYYY-MM-DD hh:MI:ss') regdate2 from board where bno = :1",
+  selectCount: "select count(bno) cnt from board",  // 게시글 총 개수 세기, 페이지네이션할때 필요함
   viewOne: "update board set views = views + 1 where bno = :1",
   update:
     "update board set title = :1, contents = :2, regdate = current_timestamp where bno = :3",
@@ -52,12 +53,19 @@ class Board {
     try {
       conn = await oracledb.makeConn();
       let result = await conn.execute(
-        boardsql.select,
+        boardsql.selectCount,
         params,
         oracledb.options
       );
       let rs = result.resultSet;
-      let row = null;
+      let idx = -1,
+        row = null;
+      if ((row = await rs.getRow())) idx = row.CNT; // 총 게시글 수, 이거 페이지네이션쓸때 필요함
+
+      result = await conn.execute(boardsql.select, params, oracledb.options);
+      rs = result.resultSet;
+      row = null;
+
       while ((row = await rs.getRow())) {
         let bd = new Board(
           row.BNO,
@@ -67,6 +75,7 @@ class Board {
           null,
           row.VIEWS
         );
+        bd.idx = idx--; // 글번호 컬럼
         bds.push(bd);
       }
     } catch (e) {
@@ -121,16 +130,18 @@ class Board {
   async updete() {
     let conn = null;
     let params = [this.title, this.contents, this.bno];
+    let updatecnt = 0;
     try {
       conn = await oracledb.makeConn();
       let result = await conn.execute(boardsql.update, params);
       await conn.commit();
-      console.log(result);
+      if (result.rowsAffected > 0) updatecnt = result.rowsAffected;
     } catch (e) {
       console.log(e);
     } finally {
       await oracledb.closeConn(conn);
     }
+    return updatecnt;
   }
 
   // 게시글 삭제
