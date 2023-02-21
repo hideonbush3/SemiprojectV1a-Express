@@ -8,19 +8,29 @@
     ellipsis;}
     .board th { padding:7px; background: lightgoldenrodyellow }
     .board tr:nth-child(odd) { background: #e4f7ba }
-    .board tr:nth-child(even) {background: #cef279 }
+    .board tr:nth-child(even)
+    {background: #cef279 }
     .alignrgt{ text-align-last: right}
-    .board td:nth-child(2), .board th:nth-child(2){text-align: left;}
-
+    .board td:nth-child(2),
+    .board th:nth-child(2){text-align: left;}
     .pagenation {
     list-style: none; padding: 0; margin: 0 auto; width: 435px }
     .pagenation li
     { display: inline-block; padding: 10px; }
-    .cpage { font: bold 48px '맑은 고딕'; color: red }
-    .prev { color: #cccccc }
+    .cpage { font: bold 48px '맑은 고딕'; color: red } .prev { color: #cccccc }
   </style>
 {{/section}}
-
+{{#section 'script'}}
+<script>
+    let newbtn = document.querySelector('#newbtn');
+    //optional chaining (?.)
+    // ? 앞의 객체변수가 null 이거나 undefined 라면
+    // . 뒤의 코드를 실행하지 않음
+    newbtn?.addEventListener('click', () =>{
+    location.href = '/board/write';
+    });
+</script>
+{{/section}}
 <main>
   <h2>게시판</h2>
   <table class="board">
@@ -31,25 +41,33 @@
       <col style="width: 15%" />
       <col style="width: 10%" />
     </colgroup>
+
     <tr><td class="alignrgt" colspan="5">
-        <button type="button" id="newbtn" onclick="location.href='/board/write'">
-          새글 쓰기</button></td></tr>
+        {{#if session.userid}}
+          <button
+            type="button"
+            id="newbtn">
+            새글 쓰기</button>
+        {{else}}&nbsp;{{/if}}
+      </td></tr>
+
+    <tr>
+      <th>번호</th>
+      <th>제목</th>
+      <th>작성자</th>
+      <th>작성일</th>
+      <th>조회</th>
+    </tr>
+    {{#bds}}
       <tr>
-          <th>번호</th>
-          <th>제목</th>
-          <th>작성자</th>
-          <th>작성일</th>
-          <th>조회</th>
+        <td>{{bno}}</td>
+        <!-- ?파라미터=값  쿼리스트링 -->
+        <td><a href="/board/view?bno={{bno}}">{{title}}</a></td>
+        <td>{{userid}}</td>
+        <td>{{regdate}}</td>
+        <td>{{views}}</td>
       </tr>
-      {{#bds}}
-          <tr>
-              <td>{{bno}}</td>
-              <td><a href="/board/view?bno={{bno}}">{{title}}</a></td>
-              <td>{{userid}}</td>
-              <td>{{regdate}}</td>
-              <td>{{views}}</td>
-          </tr>
-      {{/bds}}
+    {{/bds}}
   </table>
 
   <ul class="pagenation"><li class="prev">이전</li>

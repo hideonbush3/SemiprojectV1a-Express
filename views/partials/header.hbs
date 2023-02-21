@@ -2,8 +2,9 @@
 <nav>
     <ul>
         <li><a href="/">Home</a></li>
-        <li><a href="/member/join">회원가입</a></li>
-
+{{#if session.userid}}
+{{else}} <li><a href="/member/join">회원가입</a></li>
+{{/if}}
         <!-- session.userid가 있으면 로그아웃 출력 -->
         {{#if session.userid}}
         <li><a href="/member/logout">로그아웃</a></li>
