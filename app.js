@@ -44,17 +44,25 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
 
 // 세션
-// 지속시간 1000 = 1분
+// 세션 유효시간 30초
 const maxAge = 1000 * 30;
+// 세션 구성을 위한 옵셥들을 담은 객체
 const sessionObj = {
+  // 세션이 변경되지 않았을 때 세션을 다시 저장하지 않는다
   resave: false,
+  // 초기화되지 않은 세션을 저장하지 않는다
   saveUninitialized: false,
-  // secret 보안용 암호
+  // secret 세션 ID를 암호화하는데 사용되는 비밀 키
   secret: "process.env.COOKIE_SECRET",
+  // httpOnly는 클라이언트 측에서 쿠키에 접근할 수 없도록 하는 설정
+  // secure는 HTTPS 프로토콜을 사용하지 않는 경우에도 쿠키를 전송할 수 있도록 하는 설정
   cookie: { httpOnly: true, secure: false },
+  // 세션 쿠키의 이름을 설정
   name: "session-cookie",
+  // 세션의 유효 시간을 설정
   maxAge: maxAge,
 };
+// 세션 구성을 위한 sessionOBJ 객체를 인자로 받아 session 미들웨어 등록
 app.use(session(sessionObj));
 
 app.use(express.static(path.join(__dirname, "static")));
@@ -74,7 +82,6 @@ oracledb.initConn();
 
 // 생성한 세션을 모든 페이지에서 접근 가능하게 함
 app.use(function (req, res, next) {
-  // req.session 써서 생성한 세션 사용가능
   res.locals.session = req.session;
   next();
 });
