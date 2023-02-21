@@ -8,7 +8,8 @@ let boardsql = {
   selectOne:
     "select board.*, to_char(regdate, 'YYYY-MM-DD hh:MI:ss') regdate2 from board where bno = :1",
   viewOne: "update board set views = views + 1 where bno = :1",
-  update: "update board set title = :1, contents = :2 where bno = :3",
+  update:
+    "update board set title = :1, contents = :2, regdate = current_timestamp where bno = :3",
   delete: "delete from board where bno = :1",
 };
 
@@ -120,7 +121,6 @@ class Board {
   async updete() {
     let conn = null;
     let params = [this.title, this.contents, this.bno];
-    let insertcnt = 0;
     try {
       conn = await oracledb.makeConn();
       let result = await conn.execute(boardsql.update, params);
@@ -131,7 +131,6 @@ class Board {
     } finally {
       await oracledb.closeConn(conn);
     }
-    return insertcnt;
   }
 
   // 게시글 삭제
