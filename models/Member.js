@@ -5,6 +5,8 @@ let membersql = {
     "insert into member (mno, userid, passwd, name, email) values (mno.nextval, :1, :2, :3, :4)",
   loginsql:
     "select count(userid) cnt from member where userid =:1 and passwd =:2",
+  selectOne:
+      "select member.*, to_char(regdate, 'YYYY-MM-DD') regdate2 from member where userid = :1",
 };
 class Member {
   // 생성자 정의 - 변수 초기화
@@ -24,7 +26,6 @@ class Member {
       conn = await oracledb.makeConn();
       let result = await conn.execute(membersql.insertsql, params);
       await conn.commit(); // insert 할때 반드시 필요!
-      console.log(result);
       // rowsAffected - DML문에 대한 결과 행 수를 확인
       if (result.rowsAffected > 0) console.log("회원정보 저장 성공!");
     } catch (e) {
@@ -43,9 +44,9 @@ class Member {
     try {
       conn = await oracledb.makeConn();
       let result = await conn.execute(
-        membersql.loginsql,
-        params,
-        oracledb.options
+          membersql.loginsql,
+          params,
+          oracledb.options
       );
       let rs = result.resultSet;
       let row = null;
@@ -58,6 +59,38 @@ class Member {
       await oracledb.closeConn(conn);
     }
     return isLogin;
+  }
+
+  // 아이디로 검색된 회원의 모든 정보 조회
+  async selectOne(uid) {
+    let conn = null;
+    let params = [uid];
+    let members = [];
+
+    try {
+      conn = await oracledb.makeConn();
+      let result = await conn.execute(
+          membersql.selectOne,
+          params,
+          oracledb.options
+      );
+      let rs = result.resultSet;
+      let row = null;
+      while ((row = await rs.getRow())) {
+        let m = new Member(
+            row.USERID,
+            '',
+            row.NAME,
+            row.EMAIL,)
+        m.regdate = row.REGDATE2
+        members.push(m);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      await oracledb.closeConn(conn);
+    }
+    return members;
   }
 }
 
