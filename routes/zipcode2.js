@@ -1,39 +1,26 @@
+// 클라이언트 사이드 렌더링은 SSR에 비해 코드가 간단함
 const express = require("express");
 const router = express.Router();
 const Zipcode = require("../models/Zipcode");
 
 router.get("/", async (req, res) => {
-  let sido = req.query.sido;
-  let gugun = req.query.gugun;
-  let dong = req.query.dong;
-  let [guguns, dongs, zips] = [null, null, null];
-
+  res.render('zipcode2', {title: '시구군동 찾기 v2'});
+});
+router.get("/sido", async (req, res) => {
   let sidos = new Zipcode().getSido().then((sido) => sido);
-  // console.log(await sidos);
 
-  // 셀렉트의 값이 바뀔때마다 같은 일을 계속 실행함 SSR의 단점~
-  // 이런 종류의 페이지를 만들때는 서버에 무리가 감 그러므로 CSR이 적합하다~
-  if (sido !== undefined)
-    guguns = new Zipcode().getGugun(sido).then((gugun) => gugun);
-  // console.log(await guguns);
+  res.send(JSON.stringify(await sidos));  // 조회결과를 JSON 형식으로 전송
+});
 
-  if (sido !== undefined && gugun !== undefined)
-    dongs = new Zipcode().getDong(sido, gugun).then((dong) => dong);
-  // console.log(await dongs);
+router.get("/gugun/:sido", async (req, res) => {
+  // url로 요청한 sido값을 가져옴
+  let sido = req.params.sido;
+  // Zipcode 클래스의 새로운 객체를 만들고 클래스 내 포함된 getGugun 함수에
+  // sido값을 파라미터로 넣어서 실행하고 그 결과를 guguns 변수에 저장
+  let guguns = new Zipcode().getGugun(sido).then((gugun) => gugun);
 
-  if (sido !== undefined && gugun !== undefined && dong !== undefined)
-    zips = new Zipcode().getZipcode(sido, gugun, dong).then((zip) => zip);
-
-  res.render("zipcode", {
-    title: "시군구동 찾기",
-    sidos: await sidos,
-    guguns: await guguns,
-    dongs: await dongs,
-    sido: sido,
-    gugun: gugun,
-    dong: dong,
-    zips: await zips,
-  });
+  // guguns 변수에 저장된 select 조회결과를 JSON 문자열 형식으로 바꾸고 요청주소로 보내줌
+  res.send(JSON.stringify(await guguns));
 });
 
 module.exports = router;
