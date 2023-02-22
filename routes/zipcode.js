@@ -11,6 +11,8 @@ router.get("/", async (req, res) => {
   let sidos = new Zipcode().getSido().then((sido) => sido);
   // console.log(await sidos);
 
+  // 셀렉트의 값이 바뀔때마다 같은 일을 계속 실행함 SSR의 단점~
+  // 이런 종류의 페이지를 만들때는 서버에 무리가 감 그러므로 CSR이 적합하다~
   if (sido !== undefined)
     guguns = new Zipcode().getGugun(sido).then((gugun) => gugun);
   // console.log(await guguns);
@@ -27,9 +29,10 @@ router.get("/", async (req, res) => {
     sidos: await sidos,
     guguns: await guguns,
     dongs: await dongs,
-    zips: await zips,
     sido: sido,
     gugun: gugun,
+    dong: dong,
+    zips: await zips,
   });
 });
 
