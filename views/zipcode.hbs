@@ -20,7 +20,7 @@
     let dong = document.querySelector('#dong');
     sido.addEventListener('change', getGugun);
     gugun.addEventListener('change', getDong);
-    // dong.addEventListener('change', getZipcode);
+    dong.addEventListener('change', getZipcode);
 
   </script>
   <script>
@@ -59,11 +59,16 @@
       {{/dongs}}
     </select>
   </div>
-  {{#if sido}}
+<div>
+    {{#zips}}
     <p>
+        {{zipcode}}
     {{sido}}
     {{gugun}}
     {{dong}}
+        {{ri}}
+        {{bunji}}
     </p>
-  {{/if}}
+    {{/zips}}
+</div>
 </main>

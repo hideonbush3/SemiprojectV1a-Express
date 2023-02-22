@@ -88,7 +88,7 @@ class Zipcode {
   async getZipcode(sido, gugun, dong) {
     let conn = null;
     let params = [sido, gugun, dong];
-    let zipcodes = [];
+    let zips = [];
     try {
       conn = await oracledb.makeConn();
       let result = await conn.execute(
@@ -99,15 +99,23 @@ class Zipcode {
       let rs = result.resultSet;
       let row = null;
       while ((row = await rs.getRow())) {
-        let zipcode = { zipcode: row.ZIPCODE };
-        zipcodes.push(zipcode);
+        // zipcode.hbs에서 키로 찍으면됨
+        let zip = {
+          'zipcode': row.ZIPCODE,
+          'sido': row.SIDO,
+          'gugun': row.GUGUN,
+          'dong': row.DONG,
+          'ri': row.RI,
+          'bunji': row.BUNJI,
+        };
+        zips.push(zip);
       }
     } catch (e) {
       console.error(e);
     } finally {
       await oracledb.closeConn();
     }
-    return zipcodes;
+    return zips;
   }
 }
 module.exports = Zipcode;
