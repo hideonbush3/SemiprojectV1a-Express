@@ -6,19 +6,22 @@
   <h1>시군구동 찾기</h1>
   <div>
     <select name="sido" id="sido">
-      <option value="">
-        - 시도 -
-      </option>
+      <option value="">- 시도 -</option>
+        {{#sidos}}
+            <option value="">{{sido}}</option>
+        {{/sidos}}
     </select>
     <select name="gugun" id="gugun">
-      <option value="">
-        - 구군 -
-      </option>
+      <option value="">- 구군 -</option>
+        {{#guguns}}
+            <option value="">{{gugun}}</option>
+        {{/guguns}}
     </select>
     <select name="dong" id="dong">
-      <option value="">
-        - 동 -
-      </option>
+      <option value="">- 동 -</option>
+        {{#dongs}}
+            <option value="">{{dong}}</option>
+        {{/dongs}}
     </select>
   </div>
     <p></p>

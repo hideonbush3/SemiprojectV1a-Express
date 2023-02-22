@@ -15,7 +15,8 @@ router.get('/', async (req, res) => {
     let zipcodes = new Zipcode().getZipcode('부산', '수영구', '광안동').then(zipcode => zipcode);
     console.log(await zipcodes);
 
-    res.render('zipcode', {title: '타이틀'});
+    res.render('zipcode', {title: '시군구동 찾기',
+    sidos: await sidos, guguns : await guguns, dongs : await dongs});
 })
 
 module.exports = router;
