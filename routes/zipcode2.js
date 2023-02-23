@@ -8,8 +8,8 @@ router.get("/", async (req, res) => {
 });
 router.get("/sido", async (req, res) => {
   let sidos = new Zipcode().getSido().then((sido) => sido);
-
-  res.send(JSON.stringify(await sidos));  // 조회결과를 JSON 문자열 형태로 전송
+  // console.log(sidos)  // Promise { <pending> } 이렇게 프라미스 객체로 받아온 모습
+  res.send(JSON.stringify(await sidos));  // 프라미스 객체를 /js/zipcode2.js에 JSON 문자열 형태 변환해서 전송
 });
 
 // path variable
