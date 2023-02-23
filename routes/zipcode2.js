@@ -1,4 +1,4 @@
-// CSR은 SSR에 비해 코드가 간단함
+// CCR은 SSR에 비해 코드가 간단함
 const express = require("express");
 const router = express.Router();
 const Zipcode = require("../models/Zipcode");
@@ -8,8 +8,8 @@ router.get("/", async (req, res) => {
 });
 router.get("/sido", async (req, res) => {
   let sidos = new Zipcode().getSido().then((sido) => sido);
-  // console.log(sidos)  // Promise { <pending> } 이렇게 프라미스 객체로 받아온 모습
-  res.send(JSON.stringify(await sidos));  // 프라미스 객체를 /js/zipcode2.js에 JSON 문자열 형태 변환해서 전송
+
+  res.send(JSON.stringify(await sidos));  // 조회결과를 JSON 문자열 형태로 전송
 });
 
 // path variable
@@ -17,9 +17,13 @@ router.get("/sido", async (req, res) => {
 // express 프레임워크에서 /:변수명 형식으로 사용하고
 // 변수의 값을 가져오려면 req.params.변수명
 router.get("/gugun/:sido", async (req, res) => {
-  // url에 입력한 sido값을 가져옴
+  // url로 요청한 sido값을 가져옴
   let sido = req.params.sido;
+  // Zipcode 클래스의 새로운 객체를 만들고 클래스 내 포함된 getGugun 함수에
+  // sido값을 파라미터로 넣어서 실행하고 그 결과를 guguns 변수에 저장
   let guguns = new Zipcode().getGugun(sido).then((gugun) => gugun);
+
+  // guguns 변수에 저장된 select 조회결과를 JSON 문자열로 변환한 후 HTTP 응답으로 클라이언트에게 보냄
   res.send(JSON.stringify(await guguns));
 });
 
