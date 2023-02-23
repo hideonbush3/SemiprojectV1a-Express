@@ -62,7 +62,6 @@ const sessionObj = {
 app.use(session(sessionObj));
 
 app.use(express.static(path.join(__dirname, "static")));
-
 app.use(logger("dev"));
 
 // 미들웨어 등록 및 설정
