@@ -1,11 +1,10 @@
 {{#section "css"}}
   <style>
-    .board { width: 700px; margin: 0 auto; table-layout: fixed; border-collapse:
-    collapse }
+    .board { width: 700px; margin: 0 auto; table-layout: fixed;
+        border-collapse: collapse }
     .board td { text-align: center; padding: 7px }
-    .board
-    td:nth-child(2) { white-space: nowrap; overflow: hidden; text-overflow:
-    ellipsis;}
+    .board td:nth-child(2) { white-space: nowrap; overflow: hidden;
+        text-overflow: ellipsis;}
     .board th { padding:7px; background: lightgoldenrodyellow }
     .board tr:nth-child(odd) { background: #e4f7ba }
     .board tr:nth-child(even)
@@ -13,11 +12,11 @@
     .alignrgt{ text-align-last: right}
     .board td:nth-child(2),
     .board th:nth-child(2){text-align: left;}
-    .pagenation {
-    list-style: none; padding: 0; margin: 0 auto; width: 435px }
-    .pagenation li
-    { display: inline-block; padding: 10px; }
-    .cpage { font: bold 48px '맑은 고딕'; color: red } .prev { color: #cccccc }
+    .pagenation {list-style: none; padding: 0;
+        margin: 0 auto; width: 500px }
+    .pagenation li { display: inline-block; padding: 6px; }
+    .cpage { font: bold 32px '맑은 고딕'; color: red }
+    .prev { color: #cccccc }
   </style>
 {{/section}}
 {{#section 'script'}}
@@ -70,8 +69,15 @@
     {{/bds}}
   </table>
 
-  <ul class="pagenation"><li class="prev">이전</li>
-    <li class="cpage">1</li><li>2</li><li>3</li><li>4</li><li>5</li><li
-    >6</li><li>7</li><li>8</li><li>9</li><li>10</li>
-    <li>다음</li></ul>
+    <ul class="pagenation">
+        <li><a href="?cpg={{pgn.prev}}">이전</a></li>
+        {{#stpgns}}
+            {{#if iscpg}}
+                <li class="cpage">{{num}}</li>
+            {{else}}
+                <li><a href="?cpg={{num}}">{{num}}</a></li>
+            {{/if}}
+        {{/stpgns}}
+        <li><a href="?cpg={{pgn.next}}">다음</a></li>
+    </ul>
 </main>
