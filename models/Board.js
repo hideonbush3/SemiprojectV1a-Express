@@ -1,16 +1,29 @@
 const oracledb = require("../models/Oracle");
+const ppg = 15;
 
 let boardsql = {
   insert:
     "insert into board (bno, title, userid, contents) values (bno.nextval, :1, :2, :3)",
+
   select:
     "select bno,title,userid,to_char(regdate, 'YYYY-MM-DD') regdate,views,contents from board order by bno desc",
+
+  paging1:
+    `select * from (select bno, title, userid, views, to_char(regdate, 'YYYY-MM-DD') regdate, ` +
+    `row_number() over (order by bno desc) rowno from board `,
+
+  paging2: `) bd where rowno >= :1 and rowno < :2`,
+
   selectOne:
     "select board.*, to_char(regdate, 'YYYY-MM-DD hh:MI:ss') regdate2 from board where bno = :1",
-  selectCount: "select count(bno) cnt from board",  // 게시글 총 개수 세기, 페이지네이션할때 필요함
+
+  selectCount: "select count(bno) cnt from board", // 게시글 총 개수 세기, 페이지네이션할때 필요함
+
   viewOne: "update board set views = views + 1 where bno = :1",
+
   update:
     "update board set title = :1, contents = :2, regdate = current_timestamp where bno = :3",
+
   delete: "delete from board where bno = :1",
 };
 
@@ -46,26 +59,22 @@ class Board {
   }
 
   // 게시판 목록보기
-  async select() {
+  async select(stnum) {
     let conn = null;
+    let params = [stnum, stnum + ppg];  // 시작하는 글번호, 끝나는 글번호
     let bds = [];
-    let params = [];
+
     try {
       conn = await oracledb.makeConn();
+      let idx = await this.selectCount()  // 총 게시글 수 계산
+      idx = idx - stnum + 1;
+
       let result = await conn.execute(
-        boardsql.selectCount,
-        params,
-        oracledb.options
-      );
+          boardsql.paging1 + boardsql.paging2,
+          params,
+          oracledb.options);
       let rs = result.resultSet;
-      let idx = -1,
-        row = null;
-      if ((row = await rs.getRow())) idx = row.CNT; // 총 게시글 수, 이거 페이지네이션쓸때 필요함
-
-      result = await conn.execute(boardsql.select, params, oracledb.options);
-      rs = result.resultSet;
-      row = null;
-
+      let row = null;
       while ((row = await rs.getRow())) {
         let bd = new Board(
           row.BNO,
@@ -84,6 +93,30 @@ class Board {
       await oracledb.closeConn(conn);
     }
     return bds;
+  }
+
+  // 총 게시물 수 계산
+  async selectCount() {
+    let conn = null;
+    let params = [];  // 시작하는 글번호, 끝나는 글번호
+    let cnt = -1; // 결과 저장용
+
+    try {
+      conn = await oracledb.makeConn();
+      let result = await conn.execute(
+          boardsql.selectCount,
+          [],
+          oracledb.options
+      );
+      let rs = result.resultSet;
+      let row = null;
+      if ((row = await rs.getRow())) cnt = row.CNT; // 총 게시글 수, 이거 페이지네이션쓸때 필요함
+    } catch (e) {
+      console.log(e);
+    } finally {
+      await oracledb.closeConn(conn);
+    }
+    return await cnt;
   }
 
   // 게시글 상세조회
