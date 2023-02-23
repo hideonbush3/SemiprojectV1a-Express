@@ -10,7 +10,7 @@ let boardsql = {
 
   paging1:
     ` select * from (select bno, title, userid, views, to_char(regdate, 'YYYY-MM-DD') regdate, ` +
-    ` row_number() over (order by bno desc) rowno from board `,
+    ` row_number() over (order by bno desc) rowno from board `, // order by bno desc 해서 뽑아낸 결과를 첫번째 행부터 순번을 매겨서 rowno라는 컬럼으로 씀
 
   paging2: ` ) bd where rowno >= :1 and rowno < :2 `,
 
@@ -91,7 +91,6 @@ class Board {
     let conn = null;
     let params = [];
     let cnt = -1;   // 결과 저장용
-
     try {
       conn = await oracledb.makeConn();
       let result = await conn.execute(

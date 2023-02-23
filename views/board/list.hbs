@@ -72,9 +72,9 @@
     <ul class="pagenation">
         <li><a href="?cpg={{pgn.prev}}">이전</a></li>
         {{#stpgns}}
-            {{#if iscpg}}
+            {{#if iscpg}}   <!-- iscpg:true 일때 -->
                 <li class="cpage">{{num}}</li>
-            {{else}}
+            {{else}}        <!-- iscpg:false 일때 -->
                 <li><a href="?cpg={{num}}">{{num}}</a></li>
             {{/if}}
         {{/stpgns}}
